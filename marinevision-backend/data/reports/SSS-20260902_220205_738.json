@@ -1,0 +1,19 @@
+{
+  "scan_id": "SSS-20260902_220205_738",
+  "detections": [
+    {
+      "id": "D001",
+      "classification": "Ghost-Net",
+      "confidence": 0.8197,
+      "latitude": 20.12345,
+      "longitude": 72.98765,
+      "severity": "MEDIUM",
+      "bounding_box": {
+        "x": 309,
+        "y": 304,
+        "width": 26,
+        "height": 23
+      }
+    }
+  ]
+}
