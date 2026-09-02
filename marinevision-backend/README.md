@@ -15,7 +15,7 @@ Backend service for the MarineVision underwater sonar debris detection prototype
 
 1. **Clone the repository**:
    ```bash
-   git clone <repo-url>
+   git clone https://github.com/Aniketbhil/MarineVision.git
    cd marinevision-backend
    ```
 
