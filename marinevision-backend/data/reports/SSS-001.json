@@ -1,0 +1,33 @@
+{
+  "scan_id": "SSS-001",
+  "detections": [
+    {
+      "id": "D001",
+      "classification": "Ghost-Net",
+      "confidence": 0.94,
+      "latitude": 20.12345,
+      "longitude": 72.98765,
+      "severity": "HIGH",
+      "bounding_box": {
+        "x": 420,
+        "y": 310,
+        "width": 80,
+        "height": 45
+      }
+    },
+    {
+      "id": "D002",
+      "classification": "Ghost-Net",
+      "confidence": 0.78,
+      "latitude": 20.12345,
+      "longitude": 72.98765,
+      "severity": "MEDIUM",
+      "bounding_box": {
+        "x": 150,
+        "y": 200,
+        "width": 50,
+        "height": 30
+      }
+    }
+  ]
+}
