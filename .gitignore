@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# uv / virtual environment
+.venv/
+
+# Environment variables / secrets
+.env
+.env.local
+
+# Ultralytics training runs (large, regenerable)
+runs/
+
+# Datasets (large — regenerable via prepare_*.py scripts, don't bloat the repo)
+dataset/
+ghostvision_dataset/
+
+# Runtime data (generated at request-time, not source)
+data/uploads/*
+data/processed/*
+data/reports/*
+!data/uploads/.gitkeep
+!data/processed/.gitkeep
+!data/reports/.gitkeep
+
+# OS / editor cruft
+.DS_Store
+*.swp

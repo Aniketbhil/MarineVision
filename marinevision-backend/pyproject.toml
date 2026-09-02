@@ -1,0 +1,30 @@
+[project]
+name = "marinevision-backend"
+version = "0.1.0"
+description = "Underwater Sonar Debris Detection API Backend"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "ultralytics",
+    "opencv-python",
+    "numpy",
+    "python-multipart",
+    "pandas",
+    "datasets>=2.19.1",
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cpu", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+torchvision = [
+    { index = "pytorch-cpu", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
