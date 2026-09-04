@@ -23,13 +23,15 @@ except ImportError:
 CLASS_MAPPING = {
     "Crab-Pot": 0,
     "crab-pot": 0,
+    "Derelict-Fishing-Gear": 0,
+    "derelict-fishing-gear": 0,
     "Ghost-Net": 0,
     "ghost-net": 0,
     0: 0,
 }
 
 YAML_CLASS_NAMES = {
-    0: "Ghost-Net",
+    0: "Derelict-Fishing-Gear",
 }
 
 
@@ -52,7 +54,7 @@ def load_hf_token():
 def parse_annotations(objs):
     """
     Extract bboxes and class_ids from record objects dict.
-    Returns: list of (0, [x, y, width, height]) mapping all annotations to Class 0 ('Ghost-Net')
+    Returns: list of (0, [x, y, width, height]) mapping all annotations to Class 0 ('Derelict-Fishing-Gear')
     """
     annotations = []
     if isinstance(objs, dict):

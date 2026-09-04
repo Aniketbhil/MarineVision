@@ -1,3 +1,3 @@
 ID,Classification,Confidence,Latitude,Longitude,Severity
-D001,Ghost-Net,94%,20.12345,72.98765,HIGH
-D002,Ghost-Net,78%,20.12345,72.98765,MEDIUM
+D001,Derelict-Fishing-Gear,94%,20.12345,72.98765,HIGH
+D002,Derelict-Fishing-Gear,78%,20.12345,72.98765,MEDIUM

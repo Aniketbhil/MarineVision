@@ -36,12 +36,12 @@ def main():
     print("\n--- 2. Testing app/services/geotagging.py ---")
     raw_detections = [
         {
-            "class": "Ghost-Net",
+            "class": "Derelict-Fishing-Gear",
             "confidence": 0.94,
             "bbox": {"x": 420, "y": 310, "width": 80, "height": 45},
         },
         {
-            "class": "Ghost-Net",
+            "class": "Derelict-Fishing-Gear",
             "confidence": 0.78,
             "bbox": {"x": 150, "y": 200, "width": 50, "height": 30},
         },

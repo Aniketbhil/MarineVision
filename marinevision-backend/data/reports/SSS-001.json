@@ -3,7 +3,7 @@
   "detections": [
     {
       "id": "D001",
-      "classification": "Ghost-Net",
+      "classification": "Derelict-Fishing-Gear",
       "confidence": 0.94,
       "latitude": 20.12345,
       "longitude": 72.98765,
@@ -17,7 +17,7 @@
     },
     {
       "id": "D002",
-      "classification": "Ghost-Net",
+      "classification": "Derelict-Fishing-Gear",
       "confidence": 0.78,
       "latitude": 20.12345,
       "longitude": 72.98765,

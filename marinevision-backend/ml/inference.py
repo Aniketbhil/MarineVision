@@ -97,7 +97,7 @@ class SonarDetector:
                 continue
 
             cls_id = int(box.cls[0].item())
-            cls_name = self.model.names.get(cls_id, "Ghost-Net")
+            cls_name = self.model.names.get(cls_id, "Derelict-Fishing-Gear")
 
             # Native xyxy format in preprocessed (proc_w x proc_h) coordinate space
             x1, y1, x2, y2 = box.xyxy[0].tolist()

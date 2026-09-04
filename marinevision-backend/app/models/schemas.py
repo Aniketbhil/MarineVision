@@ -10,7 +10,7 @@ class BBox(BaseModel):
 
 
 class DetectionItem(BaseModel):
-    class_name: str = Field(..., alias="class", description="Detected debris class name ('Ghost-Net')")
+    class_name: str = Field(..., alias="class", description="Detected debris class name ('Derelict-Fishing-Gear')")
     confidence: float = Field(..., description="Detection confidence score (0.0 to 1.0)")
     bbox: BBox
 

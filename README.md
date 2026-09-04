@@ -1,6 +1,6 @@
 # MarineVision
 
-MarineVision is an AI-powered underwater sonar debris detection prototype built for SIH26057. It processes side-scan sonar contact images, detects discarded fishing gear ("Ghost-Nets") using deep learning, attaches GPS coordinates, and generates actionable risk assessment reports. This repository is structured to contain `marinevision-backend/` and sibling application modules (such as `marinevision-frontend/`).
+MarineVision is an AI-powered underwater sonar debris detection prototype built for SIH26057. It processes side-scan sonar contact images, detects derelict fishing gear ("Derelict-Fishing-Gear") using deep learning, attaches GPS coordinates, and generates actionable risk assessment reports. This repository is structured to contain `marinevision-backend/` and sibling application modules (such as `marinevision-frontend/`).
 
 ---
 
@@ -216,7 +216,7 @@ A standalone test script `scripts/test_demo_cases.py` validates end-to-end API p
 
 ## 7. Hackathon Prototype Notes
 
-* **Detector Scope**: Single-class detector trained specifically on `"Ghost-Net"` underwater sonar contacts.
+* **Detector Scope**: Single-class detector trained specifically on `"Derelict-Fishing-Gear"` underwater sonar contacts.
 * **Confidence Threshold**: Default filtering threshold is `0.70` (images with no detections above `0.70` return empty detection lists `[]`).
 * **Model Accuracy**: Current prototype model achieves **mAP50 ~0.588** (58.8% mAP@50, 22.1% mAP@50-95). This is a proof-of-concept result for hackathon demonstration.
 * **Severity Heuristics**: Risk levels (`HIGH >= 90%`, `MEDIUM >= 70%`) are prototype confidence-based heuristics, not field-validated marine risk scores.

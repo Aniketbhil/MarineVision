@@ -184,6 +184,6 @@ Generates a structured text summary and severity assessment report for a scan.
 
 ## 6. Hackathon Prototype Notes
 
-* **Detector Scope**: Single-class detector trained specifically on `"Ghost-Net"` underwater sonar contacts.
+* **Detector Scope**: Single-class detector trained specifically on `"Derelict-Fishing-Gear"` underwater sonar contacts.
 * **Confidence Threshold**: Default filtering threshold is set to `0.70` (images with no detections above `0.70` return empty detection lists `[]`).
 * **Disclaimer**: This backend is a hackathon prototype designed for demonstration purposes and rapid frontend integration. It does not guarantee production-grade detection accuracy across all sonar operational frequencies.

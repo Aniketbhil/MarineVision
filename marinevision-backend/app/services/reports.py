@@ -15,7 +15,7 @@ def generate_json_report(scan_id: str, detections: List[Dict[str, Any]]) -> Dict
     formatted_detections = []
     for idx, det in enumerate(detections, start=1):
         det_id = f"D{idx:03d}"
-        classification = det.get("classification") or det.get("class", "Ghost-Net")
+        classification = det.get("classification") or det.get("class", "Derelict-Fishing-Gear")
         conf = float(det.get("confidence", 0.0))
         lat = float(det.get("latitude", 0.0))
         lon = float(det.get("longitude", 0.0))
@@ -56,7 +56,7 @@ def generate_csv_report(scan_id: str, detections: List[Dict[str, Any]]) -> str:
 
     for idx, det in enumerate(detections, start=1):
         det_id = f"D{idx:03d}"
-        classification = det.get("classification") or det.get("class", "Ghost-Net")
+        classification = det.get("classification") or det.get("class", "Derelict-Fishing-Gear")
         conf = float(det.get("confidence", 0.0))
         conf_pct = f"{int(round(conf * 100))}%"
         lat = float(det.get("latitude", 0.0))
