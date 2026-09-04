@@ -10,33 +10,39 @@ SERVER_URL = "http://127.0.0.1:8000"
 DEMO_CASES = [
     {
         "case_num": 1,
-        "name": "Case 1: Clear Detection",
-        "image_path": "ghostvision_dataset/images/test/Contact_380_sslo_png_jpg.rf.3fc1fd368201477e8873e08721af1913.jpg",
+        "name": "Case 1: Mine Detection",
+        "image_path": "combined_dataset/images/test/0119_2015.jpg",
         "latitude": 20.12345,
         "longitude": 72.98765,
-        "expected_desc": "Derelict-Fishing-Gear detected (~82% conf, MEDIUM severity)",
+        "expected_desc": "Mine detected (~84.5% conf, MEDIUM severity)",
         "expected_count": 1,
-        "expected_conf_approx": 0.82,
+        "expected_class": "Mine",
+        "expected_conf_approx": 0.8446,
+        "expected_severity": "MEDIUM",
     },
     {
         "case_num": 2,
-        "name": "Case 2: Correctly Filtered / No Detection",
-        "image_path": "ghostvision_dataset/images/test/BB_200001_png_jpg.rf.1d41a86c389c3082a48e0bd909830d5a.jpg",
+        "name": "Case 2: Derelict-Fishing-Gear Detection",
+        "image_path": "combined_dataset/images/test/Contact_419_sslo_png_jpg.rf.cd1d9f36292dff0f9d2c5e4e8674253c.jpg",
+        "latitude": 20.12345,
+        "longitude": 72.98765,
+        "expected_desc": "Derelict-Fishing-Gear detected (~68.3% conf, MEDIUM severity)",
+        "expected_count": 1,
+        "expected_class": "Derelict-Fishing-Gear",
+        "expected_conf_approx": 0.6829,
+        "expected_severity": "MEDIUM",
+    },
+    {
+        "case_num": 3,
+        "name": "Case 3: Correctly Filtered / No Detection",
+        "image_path": "combined_dataset/images/test/0004_2015.jpg",
         "latitude": 20.13000,
         "longitude": 72.99000,
         "expected_desc": "No detections (empty list, 0 count)",
         "expected_count": 0,
+        "expected_class": None,
         "expected_conf_approx": None,
-    },
-    {
-        "case_num": 3,
-        "name": "Case 3: Second Example",
-        "image_path": "ghostvision_dataset/images/test/Contact_521_sslo_png_jpg.rf.235dcefaf07491fc8fc0c8a058bd1ae2.jpg",
-        "latitude": 20.14000,
-        "longitude": 73.00000,
-        "expected_desc": "Derelict-Fishing-Gear detected (~72% conf, MEDIUM severity)",
-        "expected_count": 1,
-        "expected_conf_approx": 0.72,
+        "expected_severity": None,
     },
 ]
 
@@ -52,9 +58,9 @@ def test_server_health():
 
 
 def main():
-    print("=" * 70)
+    print("=" * 80)
     print("DEMO CASES INTEGRATION TEST (scripts/test_demo_cases.py)")
-    print("=" * 70)
+    print("=" * 80)
 
     if not test_server_health():
         print(f"FATAL ERROR: FastAPI server is not running or unreachable at {SERVER_URL}", file=sys.stderr)
@@ -73,9 +79,9 @@ def main():
         name = case["name"]
         img_p = Path(case["image_path"])
 
-        print(f"======================================================================")
+        print("=" * 80)
         print(f"{name}")
-        print(f"======================================================================")
+        print("=" * 80)
         print(f"Image File: {img_p}")
         print(f"Coordinates: Lat={case['latitude']}, Lon={case['longitude']}")
 
@@ -137,18 +143,24 @@ def main():
                 passed = False
                 actual_desc = f"{dets_count} detections returned (expected 0)"
         else:
-            if dets_count > 0:
+            if dets_count == 1:
                 det = detections[0]
+                cls = det.get("classification")
                 conf = det.get("confidence", 0.0)
                 sev = det.get("severity", "")
-                actual_desc = f"1 detection ({det.get('classification')}, {conf*100:.1f}% conf, {sev} sev)"
-                if abs(conf - case["expected_conf_approx"]) <= 0.05:
+                actual_desc = f"1 detection ({cls}, {conf * 100:.1f}% conf, {sev} sev)"
+                
+                class_match = (cls == case["expected_class"])
+                conf_match = (abs(conf - case["expected_conf_approx"]) <= 0.03)
+                sev_match = (sev == case["expected_severity"])
+                
+                if class_match and conf_match and sev_match:
                     passed = True
                 else:
                     passed = False
             else:
                 passed = False
-                actual_desc = "0 detections returned (expected 1)"
+                actual_desc = f"{dets_count} detections returned (expected 1)"
 
         summary_results.append({
             "name": name,
@@ -156,13 +168,14 @@ def main():
             "actual": actual_desc,
             "status": "PASS" if passed else "FAIL",
         })
+        print()
 
     # Print Final Summary Table
     print("\n" + "=" * 80)
-    print(f"{'CASE NAME':<38} | {'ACTUAL OUTCOME':<28} | {'STATUS':<6}")
+    print(f"{'CASE NAME':<40} | {'ACTUAL OUTCOME':<30} | {'STATUS':<6}")
     print("=" * 80)
     for res in summary_results:
-        print(f"{res['name']:<38} | {res['actual']:<28} | {res['status']:<6}")
+        print(f"{res['name']:<40} | {res['actual']:<30} | {res['status']:<6}")
     print("=" * 80)
 
 
