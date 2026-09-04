@@ -90,7 +90,7 @@ async def analyze_sonar_scan(
         if detector_instance is None:
             raise HTTPException(status_code=500, detail="Model is not loaded.")
 
-        # 1. Run detection (confidence threshold 0.70)
+        # 1. Run detection (confidence threshold)
         raw_detections = detector_instance.detect(str(upload_path), confidence_threshold=CONFIDENCE_THRESHOLD)
 
         # 2. Attach scan-level GPS coordinates

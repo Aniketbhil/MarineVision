@@ -8,7 +8,16 @@ from ultralytics import YOLO
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Fine-tune YOLOv8n on GhostVision dataset")
+    base_dir = Path(__file__).resolve().parent.parent
+    default_data = base_dir / "combined_dataset" / "data.yaml"
+
+    parser = argparse.ArgumentParser(description="Fine-tune YOLOv8n on Combined Sonar Dataset")
+    parser.add_argument(
+        "--data",
+        type=Path,
+        default=default_data,
+        help=f"Path to dataset data.yaml (default: {default_data})",
+    )
     parser.add_argument("--epochs", type=int, default=20, help="Number of training epochs")
     parser.add_argument("--imgsz", type=int, default=416, help="Image size for training")
     parser.add_argument("--batch", type=int, default=8, help="Batch size")
@@ -17,6 +26,12 @@ def parse_args():
         "--time-check",
         action="store_true",
         help="Run 1 epoch to measure per-epoch time and print extrapolated training duration estimate",
+    )
+    parser.add_argument(
+        "--weights-out",
+        type=str,
+        default="best_v2.pt",
+        help="Target filename for best weights inside ml/weights/ (default: best_v2.pt)",
     )
     return parser.parse_args()
 
@@ -28,12 +43,13 @@ def run_time_check(args, data_yaml_path: Path):
     print(f"Dataset config: {data_yaml_path.resolve()}")
     print(f"Target Config: epochs={args.epochs}, imgsz={args.imgsz}, batch={args.batch}, patience={args.patience}")
     print("Device: cpu (forced)")
+    print("Base Checkpoint: yolov8n.pt (fresh COCO pretrained)")
     print("=" * 65)
 
     model = YOLO("yolov8n.pt")
 
     start_time = time.perf_counter()
-    # Run exactly 1 epoch with no saving/plots to measure time
+    # Run exactly 1 epoch with no saving/plots to measure per-epoch wall-clock time
     results = model.train(
         data=str(data_yaml_path.resolve()),
         epochs=1,
@@ -67,7 +83,7 @@ def run_time_check(args, data_yaml_path: Path):
             return f"{s:.2f}s"
 
     print("\n" + "=" * 65)
-    print("TIME-CHECK ESTIMATION SUMMARY")
+    print("TIME-CHECK ESTIMATION SUMMARY (COMBINED DATASET)")
     print("=" * 65)
     print(f"1-Epoch Measured Wall-Clock Time: {epoch_duration:.2f} seconds ({format_time(epoch_duration)})")
     print(f"\nExtrapolated Full Training Duration ({args.epochs} total epochs):")
@@ -80,11 +96,12 @@ def run_time_check(args, data_yaml_path: Path):
 
 def train(args, data_yaml_path: Path):
     print("=" * 65)
-    print("STARTING YOLOv8n FINE-TUNING ON GHOSTVISION DATASET")
+    print("STARTING YOLOv8n FINE-TUNING ON COMBINED DATASET")
     print("=" * 65)
     print(f"Config: epochs={args.epochs}, imgsz={args.imgsz}, batch={args.batch}, patience={args.patience}")
     print(f"Dataset: {data_yaml_path.resolve()}")
     print("Device: cpu (forced)")
+    print("Base Checkpoint: yolov8n.pt (fresh COCO pretrained)")
     print("=" * 65)
 
     model = YOLO("yolov8n.pt")
@@ -103,10 +120,10 @@ def train(args, data_yaml_path: Path):
         verbose=True,
     )
 
-    # Save best weights to ml/weights/best.pt
+    # Save best weights to ml/weights/{args.weights_out} (default: best_v2.pt)
     weights_dir = Path(__file__).resolve().parent / "weights"
     weights_dir.mkdir(parents=True, exist_ok=True)
-    target_best_pt = weights_dir / "best.pt"
+    target_best_pt = weights_dir / args.weights_out
 
     best_pt_source = Path(results.save_dir) / "weights" / "best.pt"
     if best_pt_source.exists():
@@ -135,8 +152,7 @@ def train(args, data_yaml_path: Path):
 
 def main():
     args = parse_args()
-    base_dir = Path(__file__).resolve().parent.parent
-    data_yaml_path = base_dir / "ghostvision_dataset" / "data.yaml"
+    data_yaml_path = args.data
 
     if not data_yaml_path.exists():
         print(f"FATAL ERROR: Dataset config not found at {data_yaml_path.resolve()}", file=sys.stderr)

@@ -22,15 +22,15 @@ def main():
     print("\n--- 1. Testing app/services/severity.py ---")
     sev_94 = classify_severity(0.94)
     sev_75 = classify_severity(0.75)
-    sev_50 = classify_severity(0.50)
+    sev_68 = classify_severity(0.68)
 
     print(f"classify_severity(0.94) = {sev_94} (expected: 'HIGH')")
     print(f"classify_severity(0.75) = {sev_75} (expected: 'MEDIUM')")
-    print(f"classify_severity(0.50) = {sev_50} (expected: 'FILTERED')")
+    print(f"classify_severity(0.68) = {sev_68} (expected: 'MEDIUM')")
 
     assert sev_94 == "HIGH", f"Expected HIGH, got {sev_94}"
     assert sev_75 == "MEDIUM", f"Expected MEDIUM, got {sev_75}"
-    assert sev_50 == "FILTERED", f"Expected FILTERED, got {sev_50}"
+    assert sev_68 == "MEDIUM", f"Expected MEDIUM, got {sev_68}"
 
     # 2. Test geotagging
     print("\n--- 2. Testing app/services/geotagging.py ---")

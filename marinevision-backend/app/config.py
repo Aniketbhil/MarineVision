@@ -11,8 +11,8 @@ REPORT_DIR = DATA_DIR / "reports"
 DATASET_DIR = BASE_DIR / "dataset"
 
 # ML Model settings
-MODEL_WEIGHTS_PATH = BASE_DIR / "ml" / "weights" / "best.pt"
-CONFIDENCE_THRESHOLD = 0.70
+MODEL_WEIGHTS_PATH = BASE_DIR / "ml" / "weights" / "best_v2.pt"
+CONFIDENCE_THRESHOLD = 0.65
 SEVERITY_HIGH = 0.90
 
 # Ensure essential directories exist
