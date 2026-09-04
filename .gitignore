@@ -28,4 +28,9 @@ data/reports/*
 
 # OS / editor cruft
 .DS_Store
-*.swp
+
+# Dataset artifacts
+marinevision-backend/data/mine_raw_zips/
+marinevision-backend/mine_dataset/
+marinevision-backend/combined_dataset/
+marinevision-backend/data/mine_raw_extracted/
