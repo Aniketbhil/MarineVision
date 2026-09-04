@@ -1,2 +1,2 @@
-ID,Classification,Confidence,Latitude,Longitude,Severity
-D001,Derelict-Fishing-Gear,68%,20.12345,72.98765,MEDIUM
+ID,Classification,Confidence,Latitude,Longitude,Severity,AcousticContrastRatio,ElongationRatio
+D001,Derelict-Fishing-Gear,68%,20.12345,72.98765,MEDIUM,1.1302,1.1597

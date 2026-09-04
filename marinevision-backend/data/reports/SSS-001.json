@@ -13,12 +13,17 @@
         "y": 310,
         "width": 80,
         "height": 45
+      },
+      "evidence": {
+        "acoustic_contrast_ratio": 1.1302,
+        "elongation_ratio": 1.1597,
+        "elongation_method": "contour"
       }
     },
     {
       "id": "D002",
-      "classification": "Derelict-Fishing-Gear",
-      "confidence": 0.78,
+      "classification": "Mine",
+      "confidence": 0.84,
       "latitude": 20.12345,
       "longitude": 72.98765,
       "severity": "MEDIUM",
@@ -27,6 +32,11 @@
         "y": 200,
         "width": 50,
         "height": 30
+      },
+      "evidence": {
+        "acoustic_contrast_ratio": 0.8199,
+        "elongation_ratio": 2.2222,
+        "elongation_method": "contour"
       }
     }
   ]

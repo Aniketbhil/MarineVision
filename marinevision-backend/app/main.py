@@ -14,6 +14,7 @@ from ml.inference import SonarDetector
 from app.services.severity import classify_severity
 from app.services.geotagging import attach_location
 from app.services.reports import generate_json_report, generate_csv_report
+from app.services.explainability import compute_explainability_evidence
 
 detector_instance: Optional[SonarDetector] = None
 
@@ -93,14 +94,19 @@ async def analyze_sonar_scan(
         # 1. Run detection (confidence threshold)
         raw_detections = detector_instance.detect(str(upload_path), confidence_threshold=CONFIDENCE_THRESHOLD)
 
-        # 2. Attach scan-level GPS coordinates
+        # 2. Compute explainability evidence metrics per detection
+        for det in raw_detections:
+            bbox = det.get("bbox") or det.get("bounding_box", {})
+            det["evidence"] = compute_explainability_evidence(str(upload_path), bbox)
+
+        # 3. Attach scan-level GPS coordinates
         geotagged_detections = attach_location(raw_detections, latitude=latitude, longitude=longitude)
 
-        # 3. Compute severity per detection
+        # 4. Compute severity per detection
         for det in geotagged_detections:
             det["severity"] = classify_severity(det.get("confidence", 0.0))
 
-        # 4. Generate & persist JSON and CSV reports
+        # 5. Generate & persist JSON and CSV reports
         json_report = generate_json_report(scan_id, geotagged_detections)
         generate_csv_report(scan_id, geotagged_detections)
 

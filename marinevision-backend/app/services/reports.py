@@ -10,7 +10,7 @@ from app.services.severity import classify_severity
 def generate_json_report(scan_id: str, detections: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Generates a structured JSON report for a scan, assigning sequential IDs (D001, D002...),
-    mapping classification, severity, and bounding_box, and writes to data/reports/{scan_id}.json.
+    mapping classification, severity, bounding_box, and evidence, and writes to data/reports/{scan_id}.json.
     """
     formatted_detections = []
     for idx, det in enumerate(detections, start=1):
@@ -21,6 +21,7 @@ def generate_json_report(scan_id: str, detections: List[Dict[str, Any]]) -> Dict
         lon = float(det.get("longitude", 0.0))
         sev = det.get("severity") or classify_severity(conf)
         bbox = det.get("bounding_box") or det.get("bbox", {"x": 0, "y": 0, "width": 0, "height": 0})
+        evidence = det.get("evidence")
 
         formatted_detections.append({
             "id": det_id,
@@ -30,6 +31,7 @@ def generate_json_report(scan_id: str, detections: List[Dict[str, Any]]) -> Dict
             "longitude": lon,
             "severity": sev,
             "bounding_box": bbox,
+            "evidence": evidence,
         })
 
     report_data = {
@@ -47,12 +49,22 @@ def generate_json_report(scan_id: str, detections: List[Dict[str, Any]]) -> Dict
 
 def generate_csv_report(scan_id: str, detections: List[Dict[str, Any]]) -> str:
     """
-    Generates a CSV text report with columns ID,Classification,Confidence,Latitude,Longitude,Severity
-    (with confidence formatted as percentage '94%') and writes to data/reports/{scan_id}.csv.
+    Generates a CSV text report with columns:
+    ID,Classification,Confidence,Latitude,Longitude,Severity,AcousticContrastRatio,ElongationRatio
+    and writes to data/reports/{scan_id}.csv.
     """
     output = io.StringIO()
     writer = csv.writer(output, lineterminator="\n")
-    writer.writerow(["ID", "Classification", "Confidence", "Latitude", "Longitude", "Severity"])
+    writer.writerow([
+        "ID",
+        "Classification",
+        "Confidence",
+        "Latitude",
+        "Longitude",
+        "Severity",
+        "AcousticContrastRatio",
+        "ElongationRatio",
+    ])
 
     for idx, det in enumerate(detections, start=1):
         det_id = f"D{idx:03d}"
@@ -63,7 +75,14 @@ def generate_csv_report(scan_id: str, detections: List[Dict[str, Any]]) -> str:
         lon = float(det.get("longitude", 0.0))
         sev = det.get("severity") or classify_severity(conf)
 
-        writer.writerow([det_id, classification, conf_pct, lat, lon, sev])
+        evidence = det.get("evidence") or {}
+        contrast_val = evidence.get("acoustic_contrast_ratio")
+        elong_val = evidence.get("elongation_ratio")
+
+        contrast_str = f"{contrast_val:.4f}" if isinstance(contrast_val, (int, float)) else ""
+        elong_str = f"{elong_val:.4f}" if isinstance(elong_val, (int, float)) else ""
+
+        writer.writerow([det_id, classification, conf_pct, lat, lon, sev, contrast_str, elong_str])
 
     csv_text = output.getvalue()
 

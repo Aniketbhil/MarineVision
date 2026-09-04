@@ -39,11 +39,21 @@ def main():
             "class": "Derelict-Fishing-Gear",
             "confidence": 0.94,
             "bbox": {"x": 420, "y": 310, "width": 80, "height": 45},
+            "evidence": {
+                "acoustic_contrast_ratio": 1.1302,
+                "elongation_ratio": 1.1597,
+                "elongation_method": "contour",
+            },
         },
         {
-            "class": "Derelict-Fishing-Gear",
-            "confidence": 0.78,
+            "class": "Mine",
+            "confidence": 0.84,
             "bbox": {"x": 150, "y": 200, "width": 50, "height": 30},
+            "evidence": {
+                "acoustic_contrast_ratio": 0.8199,
+                "elongation_ratio": 2.2222,
+                "elongation_method": "contour",
+            },
         },
     ]
 

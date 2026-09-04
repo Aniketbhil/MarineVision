@@ -1,2 +1,2 @@
-ID,Classification,Confidence,Latitude,Longitude,Severity
-D001,Mine,84%,20.12345,72.98765,MEDIUM
+ID,Classification,Confidence,Latitude,Longitude,Severity,AcousticContrastRatio,ElongationRatio
+D001,Mine,84%,20.12345,72.98765,MEDIUM,0.8199,2.2222
