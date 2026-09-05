@@ -1,15 +1,15 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import { CloudUpload, Radio, RefreshCw, Activity, CheckCircle, Disc, Bell } from "lucide-react";
 import { AnalysisModeCard } from "./AnalysisModeCard";
 
 export function AnalysisModeSelector() {
+  const router = useRouter();
 
   const handleManualAnalysisClick = () => {
-    // In a real app, this would push to /manual-analysis or similar
-    // router.push("/manual-analysis");
-    console.log("Navigating to Manual Analysis...");
+    router.push("/analysis/upload");
   };
 
   const manualFeatures = [
