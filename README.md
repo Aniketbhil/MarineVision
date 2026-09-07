@@ -32,6 +32,40 @@ MarineVision is an AI-powered underwater sonar debris detection prototype built 
 4. **Environment Variables**:
    * A `HF_TOKEN` / `.env` file is **ONLY** required if you intend to stream and regenerate raw datasets. It is **NOT** needed for running the backend API server.
 
+### Frontend Setup (Next.js)
+
+The project also includes a frontend web app in `marinevision-frontend/` for the sonar upload workflow and analysis experience.
+
+1. **Install frontend dependencies**:
+   ```bash
+   cd marinevision-frontend
+   npm install
+   ```
+
+2. **Run the frontend locally**:
+   ```bash
+   cd marinevision-frontend
+   npm run dev
+   ```
+
+3. **Open the app**:
+   Visit `http://localhost:3000` in your browser.
+
+4. **Frontend features**:
+   * Landing page with analysis mode selection
+   * Sonar image upload interface
+   * Deployment coordinate input flow
+   * UI for submitting scan requests to the backend API
+
+5. **Production build**:
+   ```bash
+   cd marinevision-frontend
+   npm run build
+   npm run start
+   ```
+
+> The frontend connects to the backend API running on `http://localhost:8000`.
+
 ---
 
 ## 3. Running the Server
