@@ -107,7 +107,7 @@ export function SonarReportPage({ scanId }: { scanId: string }) {
       const { jsPDF } = await import('jspdf');
       const html2canvasModule = await import('html2canvas');
       const html2canvas = html2canvasModule.default || (html2canvasModule as unknown as typeof html2canvasModule.default);
-      const reportElement = document.getElementById('report-container');
+      const reportElement = document.getElementById('pdf-report-container');
       if (!reportElement) return;
 
       const canvas = await html2canvas(reportElement, {
@@ -120,25 +120,27 @@ export function SonarReportPage({ scanId }: { scanId: string }) {
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
 
-      const imgRatio = canvas.width / canvas.height;
-      
-      let finalWidth = pdfWidth;
-      let finalHeight = finalWidth / imgRatio;
-      
-      if (finalHeight > pdfHeight) {
-        finalHeight = pdfHeight;
-        finalWidth = finalHeight * imgRatio;
-      }
-      
-      const x = (pdfWidth - finalWidth) / 2;
-      const y = 0; // Align to top for report
-
-      pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
+      // Since pdf-report-container is exactly A4 ratio (794x1123), it maps 1:1 perfectly
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
       pdf.save(`MarineVision_Report_${scanId}.pdf`);
     } catch (err) {
       console.error(err);
     }
   };
+  const getPdfImageDimensions = () => {
+    const maxWidth = 714; // 794 - 40px padding on each side
+    const maxHeight = 480;
+    const imgRatio = naturalSize.width / naturalSize.height;
+    const containerRatio = maxWidth / maxHeight;
+    
+    if (imgRatio > containerRatio) {
+      return { width: maxWidth, height: maxWidth / imgRatio };
+    } else {
+      return { width: maxHeight * imgRatio, height: maxHeight };
+    }
+  };
+
+  const pdfImgDims = getPdfImageDimensions();
 
   return (
     <div id="report-container" className="min-h-screen text-[#131b2e] font-sans antialiased flex flex-col selection:bg-[#cde5ff] selection:text-[#001d32]" style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f0f9ff 48%, #e0f2fe 100%)' }}>
@@ -382,6 +384,83 @@ export function SonarReportPage({ scanId }: { scanId: string }) {
         <p className="text-[12px] text-[#40474f]">All rights reserved to MarineVision ©2026</p>
       </footer>
 
+      {/* Hidden A4 Dedicated PDF Container */}
+      <div 
+        id="pdf-report-container" 
+        className="absolute top-[-9999px] left-[-9999px] w-198.5 h-280.75 bg-[#ffffff] flex flex-col p-10 box-border overflow-hidden"
+        style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#131b2e' }}
+      >
+        {/* Branding & Header */}
+        <div className="flex flex-col items-center justify-center border-b border-[#c0c7d166] pb-4 mb-4">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/marinevision-logo.png" alt="MarineVision" className="h-10 w-auto object-contain mb-2" />
+          <span className="font-bold tracking-tight text-[#00507d] text-3xl uppercase">MarineVision</span>
+        </div>
+        
+        <h1 className="text-center text-xl font-bold text-[#00507d] tracking-widest mb-4">SONAR ANALYSIS REPORT</h1>
+
+        {/* Dynamic Image Container */}
+        <div className="flex items-center justify-center bg-[#0f172a] rounded overflow-hidden mb-6 w-full shrink-0" style={{ height: '480px' }}>
+          {imageUrl ? (
+            <div 
+              className="relative" 
+              style={{ width: `${pdfImgDims.width}px`, height: `${pdfImgDims.height}px` }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={imageUrl} alt="Sonar" className="absolute inset-0 w-full h-full object-contain" />
+              {/* Bounding Box Overlay */}
+              {primaryDetection && primaryDetection.bounding_box && (
+                <div
+                  className="absolute border-[3px] border-[#fbbf24] bg-[#fbbf2426] rounded-sm"
+                  style={{
+                    left: `${(primaryDetection.bounding_box.x / naturalSize.width) * 100}%`,
+                    top: `${(primaryDetection.bounding_box.y / naturalSize.height) * 100}%`,
+                    width: `${(primaryDetection.bounding_box.width / naturalSize.width) * 100}%`,
+                    height: `${(primaryDetection.bounding_box.height / naturalSize.height) * 100}%`,
+                  }}
+                >
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-[#94a3b8] text-sm font-sans">Image unavailable</div>
+          )}
+        </div>
+
+        {/* Report Info */}
+        <div className="flex flex-col gap-4 shrink-0 font-sans">
+          <div className="bg-[#f8fafc] border border-[#c0c7d166] rounded p-4">
+            <h2 className="text-[#00507d] font-bold text-sm border-b border-[#c0c7d166] pb-2 mb-3 tracking-wider">ANALYSIS INFORMATION</h2>
+            <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
+              <div><span className="font-bold text-[#40474f]">Scan ID:</span> <span className="text-[#131b2e] font-mono">{scanId}</span></div>
+              <div><span className="font-bold text-[#40474f]">Identified Target:</span> <span className="text-[#131b2e] uppercase font-mono">{primaryDetection ? primaryDetection.classification.replace(/-/g, ' ') : 'NULL'}</span></div>
+              <div><span className="font-bold text-[#40474f]">Confidence:</span> <span className="text-[#131b2e] font-mono">{primaryDetection ? getConfidencePercentage(primaryDetection.confidence) : 0}%</span></div>
+              <div><span className="font-bold text-[#40474f]">Severity:</span> <span className={`font-bold font-mono ${!primaryDetection ? 'text-[#64748b]' : primaryDetection.severity.toUpperCase() === 'HIGH' ? 'text-[#dc2626]' : 'text-[#d97706]'}`}>{primaryDetection ? primaryDetection.severity : 'N/A'}</span></div>
+              <div><span className="font-bold text-[#40474f]">Latitude:</span> <span className="text-[#131b2e] font-mono">{primaryDetection?.latitude ?? contextLat ?? 'N/A'}</span></div>
+              <div><span className="font-bold text-[#40474f]">Longitude:</span> <span className="text-[#131b2e] font-mono">{primaryDetection?.longitude ?? contextLng ?? 'N/A'}</span></div>
+            </div>
+          </div>
+
+          {primaryDetection && primaryDetection.evidence && (
+            <div className="bg-[#f8fafc] border border-[#c0c7d166] rounded p-4">
+              <h2 className="text-[#00507d] font-bold text-sm border-b border-[#c0c7d166] pb-2 mb-3 tracking-wider">DETECTION EVIDENCE</h2>
+              <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
+                {primaryDetection.evidence.acoustic_contrast_ratio !== undefined && (
+                  <div><span className="font-bold text-[#40474f]">Acoustic Contrast:</span> <span className="text-[#131b2e] font-mono">{primaryDetection.evidence.acoustic_contrast_ratio}x</span></div>
+                )}
+                {primaryDetection.evidence.elongation_ratio !== undefined && (
+                  <div><span className="font-bold text-[#40474f]">Elongation Ratio:</span> <span className="text-[#131b2e] font-mono">{primaryDetection.evidence.elongation_ratio}x</span></div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="mt-auto text-center border-t border-[#c0c7d166] pt-4">
+          <p className="text-[11px] text-[#40474f] font-sans">MarineVision • AI-Powered Marine Intelligence</p>
+        </div>
+      </div>
     </div>
   );
 }
