@@ -1,5 +1,5 @@
 import { fetchApi } from "./client";
-import { AnalyzeRequest, AnalyzeResponse } from "@/types/analysis";
+import { AnalyzeRequest, AnalyzeResponse, ScanReport } from "@/types/analysis";
 
 export async function analyzeSonarImage(request: AnalyzeRequest): Promise<AnalyzeResponse> {
   const formData = new FormData();
@@ -16,5 +16,11 @@ export async function analyzeSonarImage(request: AnalyzeRequest): Promise<Analyz
   return fetchApi<AnalyzeResponse>("/api/analyze", {
     method: "POST",
     body: formData,
+  });
+}
+
+export async function getScanReport(scanId: string): Promise<ScanReport> {
+  return fetchApi<ScanReport>(`/api/report/${scanId}?format=json`, {
+    method: "GET",
   });
 }

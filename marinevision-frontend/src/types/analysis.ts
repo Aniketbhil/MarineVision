@@ -10,10 +10,35 @@ export interface AnalyzeRequest {
 
 export interface AnalyzeResponse {
   scan_id: string;
-  status: string;
-  message?: string;
-  // Other potential backend fields can be added here if known later
-  [key: string]: unknown;
+  detections?: Detection[];
+}
+
+export interface BoundingBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface Evidence {
+  acoustic_contrast_ratio?: number;
+  elongation_ratio?: number;
+}
+
+export interface Detection {
+  id: string;
+  classification: string;
+  confidence: number;
+  latitude: number;
+  longitude: number;
+  severity: string;
+  bounding_box: BoundingBox;
+  evidence: Evidence;
+}
+
+export interface ScanReport {
+  scan_id: string;
+  detections: Detection[];
 }
 
 export class ApiError extends Error {

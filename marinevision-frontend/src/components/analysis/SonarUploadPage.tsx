@@ -6,51 +6,28 @@ import { ArrowLeft, Waves } from "lucide-react";
 import { SonarUploadDropzone } from "./SonarUploadDropzone";
 import { DeploymentCoordinates } from "./DeploymentCoordinates";
 import { AnalysisSubmitButton } from "./AnalysisSubmitButton";
+import { useRouter } from "next/navigation";
+import { useAnalysis } from "@/context/AnalysisContext";
 import { Coordinates } from "@/types/analysis";
-import { analyzeSonarImage } from "@/lib/api/analysis";
 
 export function SonarUploadPage() {
+  const router = useRouter();
+  const { setCurrentFile, setLatitude, setLongitude } = useAnalysis();
+  
   const [file, setFile] = useState<File | null>(null);
   const [coordinates, setCoordinates] = useState<Coordinates>({});
   const [error, setError] = useState<string | null>(null);
-  const [apiError, setApiError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
     if (!file) return;
 
-    setIsLoading(true);
-    setApiError(null);
-    setSuccessMessage(null);
-
-    try {
-      const response = await analyzeSonarImage({ file, coordinates });
-      
-      // Phase 4 Success Handling:
-      // Since there is no Results UI yet, we will just show a success message
-      // and preserve the scan_id for future phases.
-      const scanId = response.scan_id || "UNKNOWN_SCAN_ID";
-      console.log("Analysis Successful. Scan ID:", scanId, response);
-      
-      // We could store it in localStorage if needed for Phase 5.
-      if (typeof window !== "undefined") {
-        localStorage.setItem("last_scan_id", scanId);
-      }
-
-      setSuccessMessage(`Analysis successfully submitted. Scan ID: ${scanId}`);
-      // Clear file after successful upload so it's ready for another
-      setFile(null);
-      setCoordinates({});
-    } catch (err) {
-      if (err instanceof Error) {
-        setApiError(err.message);
-      } else {
-        setApiError("An unexpected error occurred during analysis.");
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    setIsSubmitting(true);
+    setCurrentFile(file);
+    if (coordinates.latitude) setLatitude(coordinates.latitude);
+    if (coordinates.longitude) setLongitude(coordinates.longitude);
+    
+    router.push('/analysis/report/processing');
   };
 
   return (
@@ -116,23 +93,10 @@ export function SonarUploadPage() {
               setCoordinates={setCoordinates}
             />
 
-            {/* API Error / Success Messages */}
-            {apiError && (
-              <div className="w-full mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium text-center shadow-sm">
-                {apiError}
-              </div>
-            )}
-            
-            {successMessage && (
-              <div className="w-full mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-medium text-center shadow-sm">
-                {successMessage}
-              </div>
-            )}
-
             <AnalysisSubmitButton
               onClick={handleSubmit}
-              disabled={!file || error !== null}
-              isLoading={isLoading}
+              disabled={!file || error !== null || isSubmitting}
+              isLoading={isSubmitting}
             />
           </div>
           
