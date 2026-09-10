@@ -4,7 +4,7 @@ export function UnderwaterBackground() {
   return (
     <div className="fixed inset-0 -z-10 w-full h-full overflow-hidden bg-linear-to-b from-[#bdeeff] to-[#79e5e3]">
       {/* Submarine graphic in the background (left side) */}
-      <div className="absolute bottom-[20%] left-[5%] opacity-40 pointer-events-none mix-blend-multiply w-50 md:w-75">
+      <div className="absolute bottom-[20%] left-0 opacity-40 pointer-events-none mix-blend-multiply w-50 md:w-75 animate-submarine">
         <svg viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg" fill="#3b9da8">
           <g transform="translate(20, 20)">
             {/* Main hull */}

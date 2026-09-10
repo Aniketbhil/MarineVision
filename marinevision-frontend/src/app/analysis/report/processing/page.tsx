@@ -8,13 +8,15 @@ import { analyzeSonarImage } from '@/lib/api/analysis';
 
 export default function ProcessingPage() {
   const router = useRouter();
-  const { currentFile, latitude, longitude } = useAnalysis();
+  const { currentFile, latitude, longitude, isHydrated } = useAnalysis();
   
   const [apiError, setApiError] = useState<string | null>(null);
   const [isApiComplete, setIsApiComplete] = useState(false);
   const [scanId, setScanId] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!isHydrated) return;
+
     if (!currentFile) {
       router.push('/analysis/upload');
       return;
@@ -50,7 +52,7 @@ export default function ProcessingPage() {
     startAnalysis();
 
     return () => { isMounted = false; };
-  }, [currentFile, latitude, longitude, router]);
+  }, [currentFile, latitude, longitude, router, isHydrated]);
 
   const handleProgressComplete = () => {
     if (!apiError && scanId) {
@@ -70,14 +72,21 @@ export default function ProcessingPage() {
       {/* Ambient Deep Water Layer */}
       <div aria-hidden="true" className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute inset-0 mix-blend-screen" style={{ background: 'radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.95) 0%, rgba(240, 249, 255, 0.4) 60%, rgba(224, 242, 254, 0.6) 100%)', opacity: 0.6 }}></div>
-        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-white/40 blur-3xl rounded-full"></div>
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-250 h-150 bg-white/40 blur-3xl rounded-full"></div>
       </div>
 
       <main className="relative z-10 w-full grow flex items-center justify-center p-4 sm:p-6 lg:p-8">
-        <section className="w-full bg-white/75 backdrop-blur-2xl rounded-3xl border border-white/90 shadow-[0_20px_60px_-15px_rgba(2,132,199,0.18)] p-6 sm:p-9 max-w-2xl text-center">
+        <section className="w-full bg-white/75 backdrop-blur-2xl rounded-3xl border border-white/90 shadow-[0_20px_60px_-15px_rgba(2,132,199,0.18)] p-6 sm:p-10 max-w-2xl flex flex-col items-center">
           
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 mb-6">
-            Processing Sonar Data
+          {/* Branding Header */}
+          <div className="flex items-center gap-3 mb-6">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/marinevision-logo.png" alt="MarineVision Logo" className="h-8 w-auto object-contain" />
+            <span className="text-2xl font-bold tracking-tight text-[#00507d]" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>MarineVision</span>
+          </div>
+
+          <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-[#131b2e] mb-8">
+            Analyzing Sonar Telemetry...
           </h1>
 
           <div className="text-left w-full">
