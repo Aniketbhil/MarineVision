@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAnalysis } from '@/context/AnalysisContext';
 import Link from 'next/link';
@@ -19,6 +19,19 @@ export function SonarUploadPage() {
       router.push('/analysis/report/processing');
     }
   };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      if (url.searchParams.get('reset') === 'true') {
+        setCurrentFile(null);
+        setLatitude(undefined);
+        setLongitude(undefined);
+        url.searchParams.delete('reset');
+        router.replace(url.pathname + url.search);
+      }
+    }
+  }, [setCurrentFile, setLatitude, setLongitude, router]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

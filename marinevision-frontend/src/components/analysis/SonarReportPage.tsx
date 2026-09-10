@@ -118,9 +118,22 @@ export function SonarReportPage({ scanId }: { scanId: string }) {
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pdfHeight = pdf.internal.pageSize.getHeight();
 
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      const imgRatio = canvas.width / canvas.height;
+      
+      let finalWidth = pdfWidth;
+      let finalHeight = finalWidth / imgRatio;
+      
+      if (finalHeight > pdfHeight) {
+        finalHeight = pdfHeight;
+        finalWidth = finalHeight * imgRatio;
+      }
+      
+      const x = (pdfWidth - finalWidth) / 2;
+      const y = 0; // Align to top for report
+
+      pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
       pdf.save(`MarineVision_Report_${scanId}.pdf`);
     } catch (err) {
       console.error(err);
@@ -131,7 +144,7 @@ export function SonarReportPage({ scanId }: { scanId: string }) {
     <div id="report-container" className="min-h-screen text-[#131b2e] font-sans antialiased flex flex-col selection:bg-[#cde5ff] selection:text-[#001d32]" style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f0f9ff 48%, #e0f2fe 100%)' }}>
 
       {/* Top Minimal Branding Header */}
-      <header className="w-full bg-[#ffffff]/90 backdrop-blur-md px-4 sm:px-8 py-2 h-14 sticky top-0 z-50 flex items-center justify-between shadow-sm border-b border-[#c0c7d1]/40">
+      <header className="w-full bg-[#ffffffE6] backdrop-blur-md px-4 sm:px-8 py-2 h-14 sticky top-0 z-50 flex items-center justify-between shadow-sm border-b border-[#c0c7d166]">
         <div className="flex items-center gap-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/brand/marinevision-logo.png" alt="MarineVision" className="h-6 w-auto object-contain" />
@@ -145,17 +158,16 @@ export function SonarReportPage({ scanId }: { scanId: string }) {
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-8 py-6 flex flex-col gap-6">
 
         <div className="mb-2" data-html2canvas-ignore="true">
-          <Link href="/analysis/upload" className="inline-flex items-center gap-1 text-[#00507d] hover:text-[#0369a1] font-medium transition-colors text-sm">
+          <Link href="/analysis/upload?reset=true" className="inline-flex items-center gap-1 text-[#00507d] hover:text-[#0369a1] font-medium transition-colors text-sm">
             <span className="material-symbols-outlined text-[18px]">arrow_back</span>
             Back to Upload
           </Link>
         </div>
 
-        {/* Unified Cohesive Card Container */}
-        <div className="bg-[#ffffff]/95 backdrop-blur-md rounded-xl border border-[#cde5ff]/60 shadow-lg p-8 flex flex-col gap-6">
+        <div className="bg-[#ffffffF2] backdrop-blur-md rounded-xl border border-[#cde5ff99] shadow-lg p-8 flex flex-col gap-6">
 
           {/* 1. Report Workspace Header & Download Actions */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-[#c0c7d1]/40 gap-3">
+          <div className="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-[#c0c7d166] gap-3">
             <div>
               <div className="flex items-center gap-1">
                 <h1 className="text-[28px] font-semibold text-[#00507d] tracking-tight leading-none" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>REPORT</h1>
@@ -203,7 +215,7 @@ export function SonarReportPage({ scanId }: { scanId: string }) {
                     {/* Bounding Box Overlay */}
                     {primaryDetection && primaryDetection.bounding_box && (
                       <div
-                        className="absolute border-2 border-[#fbbf24] bg-[#fbbf24]/15 rounded-sm flex flex-col justify-between p-1 shadow-[0_0_12px_rgba(251,191,36,0.35)]"
+                        className="absolute border-2 border-[#fbbf24] bg-[#fbbf2426] rounded-sm flex flex-col justify-between p-1 shadow-[0_0_12px_rgba(251,191,36,0.35)]"
                         style={{
                           left: `${(primaryDetection.bounding_box.x / naturalSize.width) * 100}%`,
                           top: `${(primaryDetection.bounding_box.y / naturalSize.height) * 100}%`,
@@ -215,7 +227,7 @@ export function SonarReportPage({ scanId }: { scanId: string }) {
                           <span className="bg-[#fbbf24] text-[#020617] font-mono text-[10px] px-1.5 py-0.5 rounded-sm font-bold tracking-wide uppercase truncate max-w-[70%]">
                             {primaryDetection.classification.replace(/-/g, ' ')}
                           </span>
-                          <span className="bg-[#020617]/80 text-[#fcd34d] border border-[#fbbf24]/50 font-mono text-[10px] px-1 py-0.5 rounded-sm shrink-0">
+                          <span className="bg-[#020617CC] text-[#fcd34d] border border-[#fbbf2480] font-mono text-[10px] px-1 py-0.5 rounded-sm shrink-0">
                             {getConfidencePercentage(primaryDetection.confidence)}%
                           </span>
                         </div>
@@ -232,17 +244,17 @@ export function SonarReportPage({ scanId }: { scanId: string }) {
                 {/* Port / Starboard Water Column Technical Dividers */}
                 {imageUrl && (
                   <>
-                    <div className="absolute inset-0 pointer-events-none flex justify-between px-2 py-1 text-white/60 font-mono text-[11px] font-bold">
-                      <div className="flex items-center gap-1 bg-white/10 px-1 rounded backdrop-blur-sm h-fit">
+                    <div className="absolute inset-0 pointer-events-none flex justify-between px-2 py-1 text-[#ffffff99] font-mono text-[11px] font-bold">
+                      <div className="flex items-center gap-1 bg-[#ffffff1a] px-1 rounded backdrop-blur-sm h-fit">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#89f5e7]"></span>
                         <span>PORT WATER COLUMN</span>
                       </div>
-                      <div className="flex items-center gap-1 bg-white/10 px-1 rounded backdrop-blur-sm h-fit">
+                      <div className="flex items-center gap-1 bg-[#ffffff1a] px-1 rounded backdrop-blur-sm h-fit">
                         <span>STARBOARD WATER COLUMN</span>
                         <span className="w-1.5 h-1.5 rounded-full bg-[#89f5e7]"></span>
                       </div>
                     </div>
-                    <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-px border-r border-dashed border-[#7dd3fc]/40 pointer-events-none"></div>
+                    <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-px border-r border-dashed border-[#7dd3fc66] pointer-events-none"></div>
                   </>
                 )}
               </div>
@@ -276,14 +288,14 @@ export function SonarReportPage({ scanId }: { scanId: string }) {
                       {primaryDetection ? getConfidencePercentage(primaryDetection.confidence) : 0}%
                     </span>
                   </div>
-                  <div className="w-full h-2.5 bg-[#e2e7ff] rounded-full overflow-hidden border border-[#c0c7d1]/40">
+                  <div className="w-full h-2.5 bg-[#e2e7ff] rounded-full overflow-hidden border border-[#c0c7d166]">
                     <div className="h-full bg-[#0369a1] rounded-full" style={{ width: `${primaryDetection ? getConfidencePercentage(primaryDetection.confidence) : 0}%` }}></div>
                   </div>
                 </div>
               </div>
 
               {/* Detection Timestamp */}
-              <div className="mt-3 p-2 bg-[#f0f9ff] rounded border border-[#c0c7d1]/40 flex items-center justify-end">
+              <div className="mt-3 p-2 bg-[#f0f9ff] rounded border border-[#c0c7d166] flex items-center justify-end">
                 <div className="flex items-center gap-1 text-[#40474f] text-[12px] font-medium" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
                   <span className="material-symbols-outlined text-[16px]">schedule</span>
                   <span>{new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'short', timeStyle: 'short', hour12: false }).replace(',', '')} IST</span>
@@ -293,7 +305,7 @@ export function SonarReportPage({ scanId }: { scanId: string }) {
           </div>
 
           {/* 3. Explainable Detection Section */}
-          <div className="rounded-lg bg-[#f0f9ff]/70 border border-[#c0c7d1]/60 p-3 flex flex-col gap-2">
+          <div className="rounded-lg bg-[#f0f9ffB3] border border-[#c0c7d199] p-3 flex flex-col gap-2">
             <div className="flex items-center gap-1">
               <h3 className="text-[18px] font-semibold text-[#00507d] tracking-wide uppercase" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Why was this detected?</h3>
             </div>
@@ -304,7 +316,7 @@ export function SonarReportPage({ scanId }: { scanId: string }) {
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pt-1">
                   {primaryDetection.evidence.acoustic_contrast_ratio !== undefined && (
-                    <div className="flex items-start gap-2 p-2 bg-white rounded border border-[#c0c7d1]/40">
+                    <div className="flex items-start gap-2 p-2 bg-white rounded border border-[#c0c7d166]">
                       <div>
                         <span className="text-[14px] font-semibold text-[#131b2e] block">Acoustic Contrast</span>
                         <p className="text-[12px] text-[#40474f] font-mono mt-0.5">{primaryDetection.evidence.acoustic_contrast_ratio}x</p>
@@ -312,7 +324,7 @@ export function SonarReportPage({ scanId }: { scanId: string }) {
                     </div>
                   )}
                   {primaryDetection.evidence.elongation_ratio !== undefined && (
-                    <div className="flex items-start gap-2 p-2 bg-white rounded border border-[#c0c7d1]/40">
+                    <div className="flex items-start gap-2 p-2 bg-white rounded border border-[#c0c7d166]">
                       <div>
                         <span className="text-[14px] font-semibold text-[#131b2e] block">Shape Elongation</span>
                         <p className="text-[12px] text-[#40474f] font-mono mt-0.5">{primaryDetection.evidence.elongation_ratio}x</p>
@@ -330,14 +342,14 @@ export function SonarReportPage({ scanId }: { scanId: string }) {
 
           {/* 4. Location Section */}
           {(primaryDetection?.latitude !== undefined || contextLat !== undefined) && (primaryDetection?.longitude !== undefined || contextLng !== undefined) && (
-            <div className="rounded-lg bg-white border border-[#c0c7d1]/60 p-3 flex flex-col gap-2">
-              <div className="flex items-center gap-1 border-b border-[#c0c7d1]/30 pb-1">
+            <div className="rounded-lg bg-white border border-[#c0c7d199] p-3 flex flex-col gap-2">
+              <div className="flex items-center gap-1 border-b border-[#c0c7d14D] pb-1">
                 <span className="material-symbols-outlined text-[#00507d]">location_on</span>
                 <h3 className="text-[18px] font-semibold text-[#00507d] tracking-wide uppercase" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Location</h3>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 font-mono text-[14px] mt-1">
-                <div className="flex flex-col space-y-1 bg-[#f0f9ff]/50 p-2 rounded border border-[#c0c7d1]/30">
+                <div className="flex flex-col space-y-1 bg-[#f0f9ff80] p-2 rounded border border-[#c0c7d14D]">
                   <div className="flex justify-between items-center">
                     <span className="text-[11px] font-bold text-[#707881] uppercase tracking-wider">Latitude</span>
                     <span className="text-[#131b2e] font-semibold">{primaryDetection?.latitude ?? contextLat}° N</span>
@@ -348,7 +360,7 @@ export function SonarReportPage({ scanId }: { scanId: string }) {
                   </div>
                 </div>
 
-                <div className="flex flex-col space-y-1 bg-[#f0f9ff]/50 p-2 rounded border border-[#c0c7d1]/30">
+                <div className="flex flex-col space-y-1 bg-[#f0f9ff80] p-2 rounded border border-[#c0c7d14D]">
                   <div className="flex justify-between items-center">
                     <span className="text-[11px] font-bold text-[#707881] uppercase tracking-wider">Longitude</span>
                     <span className="text-[#131b2e] font-semibold">{primaryDetection?.longitude ?? contextLng}° E</span>
