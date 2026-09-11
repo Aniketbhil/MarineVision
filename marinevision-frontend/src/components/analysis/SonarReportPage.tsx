@@ -269,7 +269,7 @@ export function SonarReportPage({ scanId }: { scanId: string }) {
                   <div>
                     <span className="font-mono text-[11px] font-bold tracking-wider text-[#00507d] uppercase">Identified Target</span>
                     <h2 className="text-[28px] font-semibold text-[#131b2e] leading-tight" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-                      {primaryDetection ? primaryDetection.classification.replace(/-/g, ' ') : 'NULL'}
+                      {primaryDetection ? primaryDetection.classification.replace(/-/g, ' ') : 'NO OBJECT DETECTED'}
                     </h2>
                   </div>
                   {/* Severity Badge */}
@@ -433,7 +433,7 @@ export function SonarReportPage({ scanId }: { scanId: string }) {
             <h2 className="text-[#00507d] font-bold text-sm border-b border-[#c0c7d166] pb-2 mb-3 tracking-wider">ANALYSIS INFORMATION</h2>
             <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
               <div><span className="font-bold text-[#40474f]">Scan ID:</span> <span className="text-[#131b2e] font-mono">{scanId}</span></div>
-              <div><span className="font-bold text-[#40474f]">Identified Target:</span> <span className="text-[#131b2e] uppercase font-mono">{primaryDetection ? primaryDetection.classification.replace(/-/g, ' ') : 'NULL'}</span></div>
+              <div><span className="font-bold text-[#40474f]">Identified Target:</span> <span className="text-[#131b2e] uppercase font-mono">{primaryDetection ? primaryDetection.classification.replace(/-/g, ' ') : 'NO OBJECT DETECTED'}</span></div>
               <div><span className="font-bold text-[#40474f]">Confidence:</span> <span className="text-[#131b2e] font-mono">{primaryDetection ? getConfidencePercentage(primaryDetection.confidence) : 0}%</span></div>
               <div><span className="font-bold text-[#40474f]">Severity:</span> <span className={`font-bold font-mono ${!primaryDetection ? 'text-[#64748b]' : primaryDetection.severity.toUpperCase() === 'HIGH' ? 'text-[#dc2626]' : 'text-[#d97706]'}`}>{primaryDetection ? primaryDetection.severity : 'N/A'}</span></div>
               <div><span className="font-bold text-[#40474f]">Latitude:</span> <span className="text-[#131b2e] font-mono">{primaryDetection?.latitude ?? contextLat ?? 'N/A'}</span></div>

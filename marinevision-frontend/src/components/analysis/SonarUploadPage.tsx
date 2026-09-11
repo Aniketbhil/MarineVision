@@ -6,32 +6,29 @@ import { useAnalysis } from '@/context/AnalysisContext';
 import Link from 'next/link';
 
 export function SonarUploadPage() {
-  const { currentFile, setCurrentFile, latitude, setLatitude, longitude, setLongitude } = useAnalysis();
+  const { setCurrentFile, setLatitude, setLongitude } = useAnalysis();
   const router = useRouter();
+  
+  const [localFile, setLocalFile] = useState<File | null>(null);
+  const [localLat, setLocalLat] = useState<string>('');
+  const [localLng, setLocalLng] = useState<string>('');
+  
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleStartAnalysis = (e: React.FormEvent) => {
     e.preventDefault();
-    if (currentFile) {
+    if (localFile) {
+      setCurrentFile(localFile);
+      if (localLat) setLatitude(Number(localLat));
+      else setLatitude(undefined);
+      if (localLng) setLongitude(Number(localLng));
+      else setLongitude(undefined);
       setIsLoading(true);
       router.push('/analysis/report/processing');
     }
   };
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const url = new URL(window.location.href);
-      if (url.searchParams.get('reset') === 'true') {
-        setCurrentFile(null);
-        setLatitude(undefined);
-        setLongitude(undefined);
-        url.searchParams.delete('reset');
-        router.replace(url.pathname + url.search);
-      }
-    }
-  }, [setCurrentFile, setLatitude, setLongitude, router]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -40,7 +37,7 @@ export function SonarUploadPage() {
         setError("File size exceeds 100MB limit.");
       } else {
         setError(null);
-        setCurrentFile(file);
+        setLocalFile(file);
       }
     }
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -54,7 +51,7 @@ export function SonarUploadPage() {
         setError("File size exceeds 100MB limit.");
       } else {
         setError(null);
-        setCurrentFile(file);
+        setLocalFile(file);
       }
     }
   };
@@ -113,7 +110,7 @@ export function SonarUploadPage() {
             >
               <input accept=".xtf,.jsf,.tiff,.tif,.png,.jpg,.jpeg" className="sr-only" type="file" ref={fileInputRef} onChange={handleFileChange} />
               
-              {!currentFile ? (
+              {!localFile ? (
                 <>
                   <div className="w-14 h-14 rounded-2xl bg-white shadow-md border border-sky-100 flex items-center justify-center text-sky-600 group-hover:scale-110 group-hover:shadow-lg transition-transform duration-200 mb-3">
                     <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -144,11 +141,11 @@ export function SonarUploadPage() {
                     <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                       <path d="M4.5 12.75l6 6 9-13.5" strokeLinecap="round" strokeLinejoin="round"></path>
                     </svg>
-                    <span className="truncate max-w-50">{currentFile.name}</span>
+                    <span className="truncate max-w-50">{localFile.name}</span>
                   </div>
                   <button 
                     type="button"
-                    onClick={(e) => { e.stopPropagation(); setCurrentFile(null); }}
+                    onClick={(e) => { e.stopPropagation(); setLocalFile(null); }}
                     className="text-red-500 hover:text-red-700 text-xs font-semibold underline"
                   >
                     Remove File
@@ -169,22 +166,20 @@ export function SonarUploadPage() {
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1.5 font-mono">Latitude :</label>
                   <div className="relative rounded-xl shadow-sm">
-                    <input className="block w-full rounded-xl border border-sky-200 bg-white/95 px-3.5 py-2.5 text-xs sm:text-sm font-mono text-slate-800 placeholder:text-slate-400 focus:border-sky-600 focus:ring-sky-600 transition-colors" placeholder="e.g. 20.593684° N" type="number" step="any" value={latitude || ''} onChange={(e) => setLatitude(e.target.value ? Number(e.target.value) : undefined)} />
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400 text-xs font-mono">LAT</div>
+                    <input className="block w-full rounded-xl border border-sky-200 bg-white/95 px-3.5 py-2.5 text-xs sm:text-sm font-mono text-slate-800 placeholder:text-slate-400 focus:border-sky-600 focus:ring-sky-600 transition-colors" placeholder="e.g. 20.593684° N" type="number" step="any" value={localLat} onChange={(e) => setLocalLat(e.target.value)} />
                   </div>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1.5 font-mono">Longitude :</label>
                   <div className="relative rounded-xl shadow-sm">
-                    <input className="block w-full rounded-xl border border-sky-200 bg-white/95 px-3.5 py-2.5 text-xs sm:text-sm font-mono text-slate-800 placeholder:text-slate-400 focus:border-sky-600 focus:ring-sky-600 transition-colors" placeholder="e.g. 78.962880° E" type="number" step="any" value={longitude || ''} onChange={(e) => setLongitude(e.target.value ? Number(e.target.value) : undefined)} />
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400 text-xs font-mono">LON</div>
+                    <input className="block w-full rounded-xl border border-sky-200 bg-white/95 px-3.5 py-2.5 text-xs sm:text-sm font-mono text-slate-800 placeholder:text-slate-400 focus:border-sky-600 focus:ring-sky-600 transition-colors" placeholder="e.g. 78.962880° E" type="number" step="any" value={localLng} onChange={(e) => setLocalLng(e.target.value)} />
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="pt-2 flex flex-col items-center">
-              <button disabled={!currentFile || isLoading} className="w-full sm:w-auto min-w-70 inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-xl bg-sky-700 hover:bg-sky-600 text-white font-bold text-sm sm:text-base tracking-wide shadow-lg shadow-sky-600/30 hover:shadow-sky-600/40 active:scale-[0.99] transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-sky-300 disabled:opacity-50 disabled:cursor-not-allowed" type="submit">
+              <button disabled={!localFile || isLoading} className="w-full sm:w-auto min-w-70 inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-xl bg-sky-700 hover:bg-sky-600 text-white font-bold text-sm sm:text-base tracking-wide shadow-lg shadow-sky-600/30 hover:shadow-sky-600/40 active:scale-[0.99] transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-sky-300 disabled:opacity-50 disabled:cursor-not-allowed" type="submit">
                 {isLoading ? (
                   <>
                     <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
